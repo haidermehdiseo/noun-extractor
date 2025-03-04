@@ -1,8 +1,14 @@
 import streamlit as st
 import spacy
+import subprocess
 
-# Load NLP model
-nlp = spacy.load("en_core_web_sm")
+# Check if the language model is installed, if not, install it
+try:
+    nlp = spacy.load("en_core_web_sm")
+except OSError:
+    st.warning("Downloading 'en_core_web_sm' model...")
+    subprocess.run(["python", "-m", "spacy", "download", "en_core_web_sm"])
+    nlp = spacy.load("en_core_web_sm")
 
 def extract_nouns(text):
     doc = nlp(text)
