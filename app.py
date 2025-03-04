@@ -1,22 +1,14 @@
 import streamlit as st
 import spacy
-import subprocess
 
 # Define the NLP model name
 MODEL_NAME = "en_core_web_lg"  # High-accuracy NLP model
 
-# Function to ensure the NLP model is installed
-def ensure_model():
-    try:
-        nlp = spacy.load(MODEL_NAME)
-    except OSError:
-        st.warning(f"Downloading '{MODEL_NAME}' model for better accuracy. Please wait...")
-        subprocess.run(["python", "-m", "spacy", "download", MODEL_NAME], check=True)
-        nlp = spacy.load(MODEL_NAME)  # Load after installation
-    return nlp
-
-# Load the NLP model
-nlp = ensure_model()
+# Try loading the model
+try:
+    nlp = spacy.load(MODEL_NAME)
+except OSError:
+    st.error(f"Failed to load the model '{MODEL_NAME}'. Ensure it is installed correctly.")
 
 def extract_nouns(text):
     doc = nlp(text)
