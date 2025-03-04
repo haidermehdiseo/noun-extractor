@@ -2,13 +2,21 @@ import streamlit as st
 import spacy
 import subprocess
 
-# Check if the larger language model is installed, if not, install it
-try:
-    nlp = spacy.load("en_core_web_lg")  # High-accuracy model
-except OSError:
-    st.warning("Downloading 'en_core_web_lg' model for better accuracy...")
-    subprocess.run(["python", "-m", "spacy", "download", "en_core_web_lg"])
-    nlp = spacy.load("en_core_web_lg")
+# Define the NLP model name
+MODEL_NAME = "en_core_web_lg"  # High-accuracy NLP model
+
+# Function to ensure the NLP model is installed
+def ensure_model():
+    try:
+        nlp = spacy.load(MODEL_NAME)
+    except OSError:
+        st.warning(f"Downloading '{MODEL_NAME}' model for better accuracy. Please wait...")
+        subprocess.run(["python", "-m", "spacy", "download", MODEL_NAME], check=True)
+        nlp = spacy.load(MODEL_NAME)  # Load after installation
+    return nlp
+
+# Load the NLP model
+nlp = ensure_model()
 
 def extract_nouns(text):
     doc = nlp(text)
@@ -16,6 +24,7 @@ def extract_nouns(text):
 
 # Streamlit UI
 st.title("High-Accuracy Noun Extractor Tool")
+st.write(f"Using NLP Model: **{MODEL_NAME}**")
 st.write("Paste your article below, and click 'Extract Nouns' to get precise results.")
 
 text_input = st.text_area("Enter your article:")
