@@ -10,21 +10,24 @@ try:
 except OSError:
     st.error(f"Failed to load the model '{MODEL_NAME}'. Ensure it is installed correctly.")
 
-def extract_nouns(text):
+def extract_entities(text):
+    """Extracts named entities from the given text using spaCy."""
     doc = nlp(text)
-    return set([token.text for token in doc if token.pos_ == "NOUN"])
+    entities = [(ent.text, ent.label_) for ent in doc.ents]
+    return entities
 
 # Streamlit UI
-st.title("High-Accuracy Noun Extractor Tool")
+st.title("High-Accuracy Entity Extractor Tool")
 st.write(f"Using NLP Model: **{MODEL_NAME}**")
-st.write("Paste your article below, and click 'Extract Nouns' to get precise results.")
+st.write("Paste your article below, and click 'Extract Entities' to get precise results.")
 
 text_input = st.text_area("Enter your article:")
 
-if st.button("Extract Nouns"):
+if st.button("Extract Entities"):
     if text_input.strip():
-        nouns = extract_nouns(text_input)
-        st.subheader("Extracted Nouns:")
-        st.write(", ".join(nouns))
+        entities = extract_entities(text_input)
+        st.subheader("Extracted Entities:")
+        for entity, label in entities:
+            st.write(f"{entity} ({label})")
     else:
         st.warning("Please enter some text first.")
