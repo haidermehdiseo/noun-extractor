@@ -13,7 +13,7 @@ except OSError:
 def extract_entities(text):
     """Extracts named entities from the given text using spaCy."""
     doc = nlp(text)
-    entities = [(ent.text, ent.label_) for ent in doc.ents]
+    entities = [(ent.text.strip(), ent.label_) for ent in doc.ents if ent.label_ != "NORP"]  # Avoid non-useful entities
     return entities
 
 # Streamlit UI
@@ -26,8 +26,11 @@ text_input = st.text_area("Enter your article:")
 if st.button("Extract Entities"):
     if text_input.strip():
         entities = extract_entities(text_input)
-        st.subheader("Extracted Entities:")
-        for entity, label in entities:
-            st.write(f"{entity} ({label})")
+        if entities:
+            st.subheader("Extracted Entities:")
+            for entity, label in entities:
+                st.write(f"**{entity}** ({label})")
+        else:
+            st.warning("No named entities found. Try another text.")
     else:
         st.warning("Please enter some text first.")
